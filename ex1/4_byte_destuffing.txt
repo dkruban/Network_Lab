@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char input[200], output[100];
+    char FLAG = 'F', ESC = 'E';
+    int i, j = 0;
+
+    printf("Enter the stuffed data: ");
+    scanf("%s", input);
+
+    // Skip the starting FLAG at input[0] and ending FLAG at last
+    for (i = 1; i < strlen(input) - 1; i++) {
+        if (input[i] == ESC) {
+            i++; // skip ESC and take next character
+        }
+        output[j++] = input[i];
+    }
+
+    output[j] = '\0';
+    printf("Destuffed data: %s\n", output);
+
+    return 0;
+}

@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char input[100], output[200];
+    char FLAG = 'F', ESC = 'E';
+    int i, j = 0;
+
+    printf("Enter the input data: ");
+    scanf("%s", input);
+
+    output[j++] = FLAG;  // Start FLAG
+
+    for (i = 0; i < strlen(input); i++) {
+        if (input[i] == FLAG || input[i] == ESC) {
+            output[j++] = ESC;
+        }
+        output[j++] = input[i];
+    }
+
+    output[j++] = FLAG;  // End FLAG
+    output[j] = '\0';
+
+    printf("Stuffed data: %s\n", output);
+
+    return 0;
+}

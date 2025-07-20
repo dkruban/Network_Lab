@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+// Function to generate Hamming Code (7 bits from 4 data bits)
+void generateHammingCode(int data[4], int h[7]) {
+    // Data bits placement: positions 3, 5, 6, 7 (index 2, 4, 5, 6)
+    h[2] = data[0];  // d1
+    h[4] = data[1];  // d2
+    h[5] = data[2];  // d3
+    h[6] = data[3];  // d4
+
+    // Parity bits calculation using even parity
+    h[0] = data[0] ^ data[1] ^ data[3]; // p1 (position 1)
+    h[1] = data[0] ^ data[2] ^ data[3]; // p2 (position 2)
+    h[3] = data[1] ^ data[2] ^ data[3]; // p4 (position 4)
+}
+
+// Function to detect and correct error in received code
+int detectAndCorrect(int recv[7]) {
+    int p1 = recv[0] ^ recv[2] ^ recv[4] ^ recv[6];
+    int p2 = recv[1] ^ recv[2] ^ recv[5] ^ recv[6];
+    int p4 = recv[3] ^ recv[4] ^ recv[5] ^ recv[6];
+
+    // Calculate error position (binary to decimal)
+    int errorPos = (p4 * 4) + (p2 * 2) + (p1 * 1);
+
+    if (errorPos != 0) {
+        printf("\nError found at position: %d\n", errorPos);
+        recv[errorPos - 1] ^= 1; // Flip the bit to correct error
+        printf("Error corrected successfully.\n");
+    } else {
+        printf("\nNo error found in the received data.\n");
+    }
+
+    return errorPos;
+}
+
+int main() {
+    int data[4], hammingCode[7], received[7];
+
+    printf("Enter 4 data bits (d1 d2 d3 d4): ");
+    for (int i = 0; i < 4; i++) {
+        scanf("%d", &data[i]);
+    }
+
+    generateHammingCode(data, hammingCode);
+
+    printf("\nGenerated Hamming Code: ");
+    for (int i = 0; i < 7; i++) {
+        printf("%d ", hammingCode[i]);
+    }
+
+    printf("\n\nEnter the received 7 bits: ");
+    for (int i = 0; i < 7; i++) {
+        scanf("%d", &received[i]);
+    }
+
+    detectAndCorrect(received);
+
+    printf("\nFinal Corrected Code: ");
+    for (int i = 0; i < 7; i++) {
+        printf("%d ", received[i]);
+    }
+
+    printf("\n");
+
+    return 0;
+}`

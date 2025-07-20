@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <string.h>
+void binary_add(char *a, char *b, int m) {
+    int carry = 0;
+    for (int i = m - 1; i >= 0; i--) {
+        int sum = (a[i] - '0') + (b[i] - '0') + carry;
+        a[i] = (sum % 2) + '0';
+        carry = sum / 2;
+    }
+    while (carry) {
+        for (int i = m - 1; i >= 0; i--) {
+            int sum = (a[i] - '0') + carry;
+            a[i] = (sum % 2) + '0';
+            carry = sum / 2;
+            if (!carry) break;
+        }
+    }
+}
+void ones_complement(char *a, int m) {
+    for (int i = 0; i < m; i++)
+        a[i] = (a[i] == '0') ? '1' : '0';
+}
+int main() {
+    char data[128], block[32], checksum[32];
+    int m;
+    printf("SENDER SIDE\nEnter binary data: ");
+    scanf("%s", data);
+    printf("Enter block size (m): ");
+    scanf("%d", &m);
+    int len = strlen(data), rem = len % m;
+    for (int i = 0; i < m - rem && rem != 0; i++)
+        strcat(data, "0");
+    int blocks = strlen(data) / m;
+    strncpy(checksum, data, m);
+    checksum[m] = '\0';
+    for (int i = 1; i < blocks; i++) {
+        strncpy(block, data + i * m, m);
+        block[m] = '\0';
+        binary_add(checksum, block, m);
+    }
+    ones_complement(checksum, m);
+    printf("Generated Checksum: %s\n", checksum);
+    strcat(data, checksum);
+    printf("Final data to send: %s\n", data);
+    printf("\nRECEIVER SIDE\n");
+    strncpy(checksum, data, m);
+    checksum[m] = '\0';
+    for (int i = 1; i < blocks + 1; i++) {
+        strncpy(block, data + i * m, m);
+        block[m] = '\0';
+        binary_add(checksum, block, m);
+    }
+    ones_complement(checksum, m);
+    printf("Final checksum: %s\n", checksum);
+    if (strspn(checksum, "0") == m)
+        printf("✅ Message accepted. No error.\n");
+    else
+        printf("❌ Message rejected. Error detected.\n");
+
+    return 0;
+}
+
